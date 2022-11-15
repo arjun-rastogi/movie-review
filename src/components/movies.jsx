@@ -6,6 +6,7 @@ import { paginate } from './../utils/paginate';
 import ListGroup from './common/listGroup';
 import { getGenres } from '../services/fakeGenreService';
 import _ from 'lodash';
+import { Link } from 'react-router-dom';
 
 
 const Movies = () => {
@@ -81,6 +82,9 @@ const Movies = () => {
         </div>  
 
         <div className="col">
+        <Link to='/movies/new' className="btn btn-primary">
+          New Movie
+        </Link> 
 
         <p>Showing {totalCount} movies in the database.</p>
 

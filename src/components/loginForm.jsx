@@ -1,50 +1,37 @@
 import React, {useState} from 'react'
+import Joi from 'joi-browser';
 import Input from './common/input';
 
 const LoginForm = () => {
 
-  const data = {
+  
+  const [account, setAccount] = useState({
     username: '',
     password: '',
-  };
+  });
 
-  const errorMessage = {
+  const [errors, setErrors] = useState({});
 
+  const schema = {
+    username : Joi.string().required().label("Username"),
+    password: Joi.string().required().label("Password"),
   }
-
-  const [account, setAccount] = useState(data);
-  const [errors, setErrors] = useState(errorMessage);
-
-  const validateProperty = ({name, value}) => {
-    if(name === 'usermame') {
-      if(value.trim() === '') return "Username is required";
-    }
-    if(name === 'password') {
-      if(value.trim() === '') return "Password is required";
-    }
-  }
-
-  const handleChange= ({ currentTarget : input}) => {
-
-    const errors = {...errors};
-    const errorMessage = validateProperty(input);
-    if(errorMessage) errors[input.name]= errorMessage;
-    else delete errors[input.name];
-		const accounts = {...account};
-
-    accounts[input.name] = input.value;
-    setAccount(accounts);
-    setErrors(errors);
-	}
 
   const validate = () => {
-    const errors = {};
-    if(account.username.trim() === '') 
-    errors.username = 'Username is required';
-    if(account.password.trim() === '') 
-    errors.password = 'Password is required';
+   const options = { abortEarly: false };
+   const { error } = Joi.validate(account, schema, options);
+   if(!error) return null;
 
-    return Object.keys(errors).length === 0 ? null : errors;
+   const errors = {};
+   for (let item of error.details) errors[item.path[0]] = item.message;
+   return errors;
+  };  
+
+  const validateProperty = ({name, value}) => {
+    const obj = { [name] : value};
+    const schemas = { [name] : schema[name]};
+    const {error} = Joi.validate(obj, schemas);
+    return error ? error.details[0].message :  null;
   };
 
   const handleSubmit = e => {
@@ -55,6 +42,20 @@ const LoginForm = () => {
     if (errors) return;
     console.log("Submitted data");
   };  
+
+  const handleChange= ({ currentTarget : input}) => {
+
+    const error = {...errors};
+    const errorMessage = validateProperty(input);
+    if(errorMessage) error[input.name]= errorMessage;
+    else delete error[input.name];
+
+    const accounts = {...account};
+    accounts[input.name] = input.value;
+    setAccount(accounts);
+    setErrors(error);
+	};
+
 
 
   const { username, password} = account;
@@ -79,7 +80,11 @@ const LoginForm = () => {
             onChange={handleChange} 
             />
             <div style={{margin: "14px 0px 0px"}}>
-            <button className="btn btn-primary">Submit</button>
+            <button
+            disabled={validate()} 
+            className="btn btn-primary">
+              Login
+            </button>
             </div>
         </form>
     </div>
