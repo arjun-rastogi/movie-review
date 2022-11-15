@@ -2,7 +2,11 @@ import React from 'react'
 
 const Customers = () => {
   return (
-    <div>Customers</div>
+    <>
+    <div>
+        <h1>Customers</h1>
+    </div>
+    </>
   )
 }
 

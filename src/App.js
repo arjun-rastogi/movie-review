@@ -5,7 +5,11 @@ import MovieForm from './components/movieForm';
 import Customers from './components/customers';
 import Rentals from './components/rentals';
 import Notfound from './components/notFound';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import LoginForm from './components/loginForm';
+import RegisterForm from './components/registerForm';
+import { 
+  BrowserRouter as Router, Routes, Route, Navigate 
+} from 'react-router-dom';
 
 const App = () => {
   return (
@@ -14,6 +18,8 @@ const App = () => {
     <Navbar />
     <main className="container">
       <Routes>
+        <Route path='/register' element={<RegisterForm />}/>
+        <Route path='/login' element={<LoginForm />}/>
         <Route path='/movies/:id' element={<MovieForm />}/>
         <Route path='/movies' element={<Movies />}/>
         <Route path='/customers' element={<Customers />}/>
