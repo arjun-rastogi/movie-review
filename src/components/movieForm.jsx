@@ -4,6 +4,7 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import Input from "./common/input";
 import { getGenres } from "../services/fakeGenreService";
 import { getMovie, saveMovie } from "../services/fakeMovieService";
+import Select from './common/select';
 
 const MovieForm = () => {
 
@@ -32,7 +33,18 @@ const MovieForm = () => {
   useEffect(() => {
     const genres = getGenres();
     setGenres(genres);
-  }, genres);
+  }, []);
+
+
+  const mapToViewModel = movie => {
+    return {
+      _id: movie._id,
+      title: movie.title,
+      genreId: movie.genre._id,
+      numberInStock: movie.numberInStock,
+      dailyRentalRate: movie.dailyRentalRate
+    };
+  }
 
 
   useEffect(()=>{
@@ -43,17 +55,8 @@ const MovieForm = () => {
     if (!movie) return navigate("/not-found");
 
     setAccount(mapToViewModel(movie))
-  },account);
+  },[]);
 
- const mapToViewModel = movie => {
-    return {
-      _id: movie._id,
-      title: movie.title,
-      genreId: movie.genre._id,
-      numberInStock: movie.numberInStock,
-      dailyRentalRate: movie.dailyRentalRate
-    };
-  }
 
 
   const validate = () => {
@@ -105,15 +108,6 @@ const MovieForm = () => {
   return (
     <>
     <div>
-      <button
-        className="btn btn-primary"
-        onClick={() => navigate("/movies")}
-      >
-        Save
-      </button>
-    </div>
-
-    <div>
        <h1>Movie Form </h1>
         <form onSubmit={handleSubmit}>
             <Input 
@@ -121,6 +115,29 @@ const MovieForm = () => {
             label="Title"
             value={title}
             error={errors.title}
+            onChange={handleChange} 
+            />
+            <Select 
+            name="genreId"
+            label="Genre"
+            value={genreId}
+            options={genres}
+            error={errors.genreId}
+            onChange={handleChange} 
+            />
+            <Input 
+            name="numberInStock"
+            label="Number In Stock"
+            value={numberInStock}
+            error={errors.numberInStock}
+            onChange={handleChange} 
+            type="Number"
+            />
+            <Input 
+            name="dailyRentalRate"
+            label="Rate"
+            value={dailyRentalRate}
+            error={errors.dailyRentalRate}
             onChange={handleChange} 
             />
             <div style={{margin: "14px 0px 0px"}}>
