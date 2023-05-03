@@ -1,95 +1,37 @@
-import React, {useState} from 'react'
-import Joi from 'joi-browser';
-import Input from './common/input';
+import React from "react";
+import Joi from "joi-browser";
+import Form from "../components/common/forms";
+import Input from "./common/input";
 
 const LoginForm = () => {
+  const initialData = { username: "", password: "" };
 
-  
-  const [account, setAccount] = useState({
-    username: '',
-    password: '',
-  });
-
-  const [errors, setErrors] = useState({});
-
-  const schema = {
-    username : Joi.string().required().label("Username"),
-    password: Joi.string().required().label("Password"),
-  }
-
-  const validate = () => {
-   const options = { abortEarly: false };
-   const { error } = Joi.validate(account, schema, options);
-   if(!error) return null;
-
-   const errors = {};
-   for (let item of error.details) errors[item.path[0]] = item.message;
-   return errors;
-  };  
-
-  const validateProperty = ({name, value}) => {
-    const obj = { [name] : value};
-    const schemas = { [name] : schema[name]};
-    const {error} = Joi.validate(obj, schemas);
-    return error ? error.details[0].message :  null;
+  const doSubmit = () => {
+    // Call the server
+    console.log("Submitted");
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    const errors = validate();
-    console.log(errors);
-    setErrors(errors || {});
-    if (errors) return;
-    console.log("Submitted data");
-  };  
+  const schema = {
+    username: Joi.string().required().label("Username"),
+    password: Joi.string().required().label("Password"),
+  };
 
-  const handleChange= ({ currentTarget : input}) => {
-
-    const error = {...errors};
-    const errorMessage = validateProperty(input);
-    if(errorMessage) error[input.name]= errorMessage;
-    else delete error[input.name];
-
-    const accounts = {...account};
-    accounts[input.name] = input.value;
-    setAccount(accounts);
-    setErrors(error);
-	};
-
-
-
-  const { username, password} = account;
+  const { data, errors, renderInput, renderButton, handleSubmit } = Form({
+    data: initialData,
+    schema,
+    onSubmit: doSubmit,
+  });
 
   return (
-    <>
     <div>
-        <h1>Login</h1>
-        <form onSubmit={handleSubmit}>
-            <Input 
-            name="username"
-            label="Username"
-            value={username}
-            error={errors.username}
-            onChange={handleChange} 
-            />
-            <Input 
-            name="password"
-            label="Password"
-            value={password}
-            error={errors.password}
-            onChange={handleChange} 
-            />
-            <div style={{margin: "14px 0px 0px"}}>
-            <button
-            disabled={validate()} 
-            className="btn btn-primary">
-              Login
-            </button>
-            </div>
-        </form>
+      <h1>Login</h1>
+      <form onSubmit={handleSubmit}>
+        {renderInput("username", "Username")}
+        {renderInput("password", "Password", "password")}
+        {renderButton("Login")}
+      </form>
     </div>
-    </>
-  )
-}
+  );
+};
 
-export default LoginForm
+export default LoginForm;
